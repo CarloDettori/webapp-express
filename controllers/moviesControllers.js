@@ -33,15 +33,17 @@ const destroy = (req, res) => {
     const sql = "DELETE FROM `movies` WHERE `id` = ?"
     connection.query(sql, [id], (err, result) => {
         if (err) return (
-            res.statur(500),
+            res.status(500),
             console.log("Movie not find")
 
         )
-        if (results) {
-            res.status(204)
-            console.log(`Movie (id:${id}) is removed`)
+
+        if (result) {
+            console.log(`Movie id:${id} is removed`)
+            return res.status(204)
+
         }
-        res.status(204).json({ message: "element  deleted" })
+        return res.json({ message: "element  deleted" })
 
 
     })
