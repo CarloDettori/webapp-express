@@ -29,21 +29,25 @@ const show = (req, res) => {
 }
 
 const destroy = (req, res) => {
+
     const id = parseInt(req.params.id)
     const sql = "DELETE FROM `movies` WHERE `id` = ?"
+
     connection.query(sql, [id], (err, result) => {
+        console.log(result)
         if (err) return (
-            res.status(500),
-            console.log("Movie not find")
+            res.status(500).json({ error: err.message })
+            //console.log("Movie not find")
 
         )
 
-        if (result) {
+        if (result.affectedRows > 0) {
             console.log(`Movie id:${id} is removed`)
             return res.status(204)
 
+        } else {
+            return res.status(404).json({ message: "element not found" })
         }
-        return res.json({ message: "element  deleted" })
 
 
     })
