@@ -13,20 +13,25 @@ const index = (req, res) => {
 }
 
 const show = (req, res) => {
-    const id = parseInt(req.params.id)
-    const sql = "SELECT * FROM `movies` WHERE `id` = ?"
-    connection.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({
-            error: "Databse query failed"
-        })
-
-        if (result[0])
-            return res.json({ item: result[0] })
-        if (result[0] === undefined)
-            console.log(result)
-        return res.status(500).json({ error: "movie not found" })
-    })
+    const id = parseInt(req.params.id);
+    const sql = `SELECT books.*, AVG(reviews.vote) AS vote_average FROM books
+  JOIN reviews ON reviews.book_id = books.id
+  WHERE 	books.id = 2
+  GROUP BY reviews.book_id`;
+    connection.query(sql, [id], (err, results) => {
+        if (err) res.status(500).json({ error: "Errore del server" });
+        const item = results[0];
+        if (!item) res.status(404).json({ error: "Not Found" });
+        const sqlReviews = "SELECT * FROM `reviews` WHERE `book_id` = ?";
+        connection.query(sqlReviews, [id], (err, reviews) => {
+            if (err) res.status(500).json({ error: "Errore del server" });
+            item.reviews = reviews;
+            res.json(item);
+        });
+        //console.log(results[0]);
+    });
 }
+
 
 const destroy = (req, res) => {
 
@@ -37,7 +42,7 @@ const destroy = (req, res) => {
         console.log(result)
         if (err) return (
             res.status(500).json({ error: err.message })
-            //console.log("Movie not find")
+            //console.log("Movie not found")
 
         )
 
