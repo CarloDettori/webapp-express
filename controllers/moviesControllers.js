@@ -24,21 +24,27 @@ const index = (req, res) => {
 }
 
 const show = (req, res) => {
+
     const id = parseInt(req.params.id);
-    const sql = `SELECT movies.* FROM movies
-  JOIN reviews ON reviews.movie_id = movies.id
-  WHERE 	movies.id = 2
-  GROUP BY reviews.movies_id`;
+    const sql = `SELECT movies.* 
+    WHERE movies.id = ?`
     connection.query(sql, [id], (err, results) => {
-        if (err) res.status(500).json({ error: "Errore del server" });
-        const item = results[0];
-        if (!item) res.status(404).json({ error: "Not Found" });
-        const sqlReviews = "SELECT * FROM `reviews` WHERE `book_id` = ?";
-        connection.query(sqlReviews, [id], (err, reviews) => {
-            if (err) res.status(500).json({ error: "Errore del server" });
-            item.reviews = reviews;
-            res.json(item);
-        });
+
+        if (err)
+            return res.status(500).json({ error: err });
+
+        if (results[0]) {
+            const sqlReviews = `SELECT reviews.* FROM reviews 
+        JOIN movies ON movies.id = review.movie_id
+        WHERE book_id = ?`;
+            const item = results[0];
+            connection.query(sqlReviews, [id], (err, movieReview) => {
+                if (err)
+                    return res.status(500).json({ error: err });
+                item.reviews = movieReview;
+                return res.json({ item: item });
+            });
+        } else { return res.status(404).json({ error: "Not Found" }); }
         //console.log(results[0]);
     });
 }
