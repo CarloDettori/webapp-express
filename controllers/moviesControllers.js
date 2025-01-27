@@ -1,4 +1,15 @@
 import connection from "../connection.js"
+import mysql from 'mysql2';
+
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host: 'localhost',
+    user: 'your_username',
+    password: 'your_password',
+    database: 'your_database',
+});
+
+export default pool;
 
 const index = (req, res) => {
     const sql = "SELECT * FROM `movies`"
@@ -14,10 +25,10 @@ const index = (req, res) => {
 
 const show = (req, res) => {
     const id = parseInt(req.params.id);
-    const sql = `SELECT books.*, AVG(reviews.vote) AS vote_average FROM books
-  JOIN reviews ON reviews.book_id = books.id
-  WHERE 	books.id = 2
-  GROUP BY reviews.book_id`;
+    const sql = `SELECT movies.* FROM movies
+  JOIN reviews ON reviews.movie_id = movies.id
+  WHERE 	movies.id = 2
+  GROUP BY reviews.movies_id`;
     connection.query(sql, [id], (err, results) => {
         if (err) res.status(500).json({ error: "Errore del server" });
         const item = results[0];
