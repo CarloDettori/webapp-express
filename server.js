@@ -1,6 +1,5 @@
 import express from "express"// importiamo express
 const server = express() // importuiamo cors
-import connection from "./connection.js"
 const PORT = process.env.PORT || 3000 // creiamo istanza server
 import cors from "cors" // importiamo dal file env le variabili di ambiente
 import moviesRouter from "./routes/moviesRouter.js"

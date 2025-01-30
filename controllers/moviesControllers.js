@@ -26,7 +26,7 @@ const index = (req, res) => {
 const show = (req, res) => {
 
     const id = parseInt(req.params.id);
-    const sql = `SELECT movies.* 
+    const sql = `SELECT movies.* FROM movies 
     WHERE movies.id = ?`
     connection.query(sql, [id], (err, results) => {
 
@@ -35,8 +35,8 @@ const show = (req, res) => {
 
         if (results[0]) {
             const sqlReviews = `SELECT reviews.* FROM reviews 
-        JOIN movies ON movies.id = review.movie_id
-        WHERE book_id = ?`;
+        JOIN movies ON movies.id = reviews.movie_id
+        WHERE movies.id = ?`;
             const item = results[0];
             connection.query(sqlReviews, [id], (err, movieReview) => {
                 if (err)
